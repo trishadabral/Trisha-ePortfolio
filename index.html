@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My E-Portfolio</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Load SweetAlert2 for user-friendly dialogs (instead of alert/confirm) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1f2937; } /* bg-gray-800 */
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; } /* bg-gray-600 */
+        ::-webkit-scrollbar-thumb:hover { background: #6b7280; } /* bg-gray-500 */
+
+        /* Custom style for the video embed container */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+        }
+        /* Custom styles to handle video file upload display */
+        .video-container.file-embed {
+            padding-bottom: 75%; /* Maintain a reasonable aspect ratio for local video files */
+            height: auto;
+        }
+        .video-container.file-embed video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Ensure the video fits within the container */
+            background-color: #1f2937; /* Dark background for file player */
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        /* Ensure the body takes up the full viewport height */
+        body { min-height: 100vh; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans p-4 sm:p-8">
+
+    <div id="loading-overlay" class="fixed inset-0 bg-gray-900 flex items-center justify-center z-50 transition-opacity duration-300">
+        <div class="text-xl flex items-center">
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Loading Portfolio...
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div id="portfolio-app" class="max-w-6xl mx-auto space-y-10 hidden">
+
+        <!-- Header: Profile and User Info -->
+        <header class="bg-gray-800 p-6 rounded-xl shadow-2xl flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-8">
+            
+            <div class="relative group">
+                <!-- Profile Picture (Removed cursor-pointer class and overlay button) -->
+                <img id="profile-picture" src="PFP.jpg" onerror="this.src='https://placehold.co/150x150/0f172a/94a3b8?text=Your+Pic';" alt="Trisha Dabral Profile Picture" 
+                     class="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-full border-4 border-indigo-500 shadow-lg">
+                
+                <!-- Removed: Overlay Button to Change Picture -->
+            </div>
+
+            <div class="text-center md:text-left flex-grow">
+                <!-- Hardcoded Name -->
+                <h1 id="user-name" class="text-3xl sm:text-4xl font-extrabold text-indigo-400">TRISHA DABRAL</h1>
+                <!-- Hardcoded Roll No -->
+                <p id="user-roll" class="text-xl text-gray-400 font-medium">Section A1 Roll No. 62</p>
+                <div id="security-info" class="mt-2 flex items-center justify-center md:justify-start space-x-2">
+                    <span class="px-2 py-0.5 text-xs font-medium tracking-wider text-green-100 bg-green-600 rounded-full flex items-center">
+                        <i data-lucide="lock" class="w-3 h-3 mr-1"></i> PRIVATE
+                    </span>
+                    <span id="local-mode-warning" class="text-yellow-400 text-xs font-semibold px-2 py-0.5 bg-yellow-900/50 rounded-full hidden">
+                        RUNNING IN LOCAL MODE (NO DATABASE)
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- New Self Introduction Section -->
+        <section class="bg-gray-800 p-6 rounded-xl shadow-xl">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-gray-200 flex items-center space-x-2">
+                    <i data-lucide="user" class="w-6 h-6 text-indigo-400"></i>
+                    <span>My Self Introduction</span>
+                </h2>
+                <!-- Removed: Edit Introduction Button -->
+            </div>
+            <!-- whitespace-pre-wrap ensures line breaks in the text area are preserved -->
+            <div id="self-introduction-text" class="text-gray-300 whitespace-pre-wrap">
+                <!-- Content will be loaded here by JavaScript -->
+                Loading self introduction...
+            </div>
+        </section>
+        
+        <!-- Grid for Video and Key Takeaways -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            
+            <!-- SWOC Video Section (Left Column on Desktop) -->
+            <section class="bg-gray-800 p-6 rounded-xl shadow-xl">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-bold text-gray-200 flex items-center space-x-2">
+                        <i data-lucide="video" class="w-6 h-6 text-pink-400"></i>
+                        <span>SWOC Video Showcase</span>
+                    </h2>
+                    <!-- Removed: Update Video URL Button -->
+                </div>
+                
+                <div id="swoc-video-embed" class="video-container rounded-lg border-2 border-gray-700 bg-gray-700">
+                    <div class="flex items-center justify-center h-full text-gray-400 p-8 text-center absolute w-full h-full">
+                        <p>No video linked yet. Click 'Update Video URL' to embed your SWOC video from YouTube or a similar platform.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Key Takeaways Section (Right Column on Desktop) -->
+            <section class="bg-gray-800 p-6 rounded-xl shadow-xl flex flex-col">
+                <h2 class="text-2xl font-bold text-gray-200 mb-4 flex items-center space-x-2">
+                    <i data-lucide="list-checks" class="w-6 h-6 text-green-400"></i>
+                    <span>Key Lecture Takeaways</span>
+                </h2>
+                
+                <!-- Takeaways List -->
+                <!-- max-h-[80vh] is used to give it a fixed scrollable height, necessary now that the add form is gone -->
+                <div id="takeaways-list" class="space-y-4 overflow-y-auto max-h-[80vh] p-2 -m-2">
+                    <!-- Takeaway items will be dynamically inserted here -->
+                    <p class="text-center text-gray-500 py-8">Loading takeaways...</p>
+                </div>
+            </section>
+        </div>
+
+    </div>
+
+    <script type="module">
+        // Import only if needed (for environment use)
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getFirestore, doc, onSnapshot, collection, query, orderBy, 
+            getDoc, setLogLevel
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // --- Global Variables (Provided by Canvas Environment) ---
+        const isCanvasEnvironment = typeof __app_id !== 'undefined' && typeof __firebase_config !== 'undefined';
+        
+        const appId = isCanvasEnvironment ? __app_id : 'default-eportfolio-id';
+        const firebaseConfig = isCanvasEnvironment ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = isCanvasEnvironment ? __initial_auth_token : null;
+
+        let db, auth, userId;
+        let isAuthReady = false;
+        let isDbConnected = false;
+
+        // --- Mock Data for Local Run ---
+        const PFP_FALLBACK_URL = 'https://placehold.co/150x150/0f172a/94a3b8?text=Your+Pic';
+
+        const LOCAL_PROFILE = {
+            profilePicUrl: 'PFP.jpg', // Local file path for VSC run
+            introductionText: "My name is Trisha Dabral, and I’m pursuing my Bachelor’s in Computer Science from Graphic Era Hill University.\nI would describe myself as a self-motivated, adaptable, and empathetic person. I constantly look for ways to improve myself — whether by taking online courses or reading books to enhance my technical knowledge and interpersonal skills.\nI’m also supportive and understanding when working in a team. I always try to create a positive environment where everyone feels heard and valued, because I believe teamwork is built on empathy and cooperation.\nBeing organized and flexible, I like to prioritize my tasks well. Even if I procrastinate at times, I make sure to manage my time efficiently and complete my responsibilities. I work well under pressure and can adjust easily to new situations.\nOver time, I’ve developed strong public speaking, presentation, and problem-solving skills. Participating in debates and tech events has improved my communication, boosted my confidence, and strengthened my logical thinking.\nMy short-term goal is to gain hands-on experience through internships and real-world projects, while my long-term goal is to build a career where I can effectively apply both my technical and interpersonal skills.\nIn short, I’m a motivated and adaptable learner who values teamwork, growth, and continuous learning.",
+            videoUrl: 'SWOC.mp4', // Local file path for VSC run
+            updatedAt: new Date()
+        };
+        
+        // Use a mutable copy of local takeaways for runtime changes
+        let localTakeaways = [
+             {
+                lectureTitle: "UNIT 1: SWOC Analysis",
+                text: "This unit helped me understand myself better. Through the SWOC activity, I explored my strengths, weaknesses, opportunities, and challenges in an honest and thoughtful way. The most interesting part was expressing my weaknesses positively — it helped me realize that even weaknesses can be areas for growth. Creating a video on my SWOC analysis also improved my confidence in speaking about myself.\n\nWriting about my achievements gave me the opportunity to reflect on my personal and academic journey. It made me realize how each experience, whether big or small, taught me something valuable. Overall, this unit encouraged self-reflection and helped me see how my strengths can support my goals and personal development.",
+                timestamp: new Date(Date.now() - 5000)
+            },
+            {
+                lectureTitle: "UNIT 2: Self Introduction I",
+                text: "This unit taught me how to introduce myself confidently and genuinely. The activity where we chose words that described us made me think deeply about my personality and what truly defines me. Explaining why I related to certain qualities, like being confident or determined, helped me understand myself better.\n\nRecording my self-introduction video was a great experience because I got to combine my personality traits with my short-term and long-term goals. This made me more aware of how my present actions contribute to my future plans. It also improved both my speaking skills and my comfort in expressing who I am.",
+                timestamp: new Date(Date.now() - 10000)
+            },
+            {
+                lectureTitle: "UNIT 3: Presentation Skills I (8 Hours)",
+                text: "This was one of the most creative and hands-on units. We were asked to prepare a project using four objects from the classroom — a notebook, paper, ID card, and a coin. My group created a handmade notebook that had compartments for an ID card and money, showing how everyday materials can be used innovatively through teamwork and creativity.\n\nThis activity helped me learn how to plan, design, and present ideas effectively. It also taught me the importance of teamwork, coordination, and clear communication. Presenting our project in front of the class helped me become more confident and comfortable speaking to an audience.",
+                timestamp: new Date(Date.now() - 15000)
+            },
+            {
+                lectureTitle: "UNIT 4: Public Speaking I",
+                text: "In this unit, we focused on understanding the essentials of public speaking. We watched a TED Talk related to communication and then participated in a group discussion about its key points. The discussion helped me realize how tone, facial expressions, and emotions can influence how a message is received by the audience.\n\nI learned how important it is to connect with listeners through clarity, confidence, and the right use of pauses and gestures. The overall experience made me more aware of my own speaking style and how I can improve it to become a better communicator.",
+                timestamp: new Date(Date.now() - 20000)
+            },
+            {
+                lectureTitle: "UNIT 5: Art of Conversation",
+                text: "The final unit focused on the art of meaningful conversation. I learned that effective communication isn’t just about speaking — it’s about listening attentively, maintaining good body language, and responding thoughtfully. We discussed how small details like eye contact, smiling, and appropriate pauses can make conversations smoother and more genuine.\n\nThis unit helped me become more confident in both personal and professional interactions. I now pay more attention to how I express myself, not just through words but also through tone, gestures, and attitude, which has made my communication more natural and impactful.",
+                timestamp: new Date(Date.now() - 25000)
+            }
+        ];
+        
+        // --- Firebase Initialization and Auth ---
+        async function initializeFirebase() {
+            if (!isCanvasEnvironment) {
+                console.warn("Running in local mode. Database connection is skipped. Using mock data.");
+                document.getElementById('local-mode-warning').classList.remove('hidden');
+                isAuthReady = true;
+                isDbConnected = false;
+                return;
+            }
+
+            try {
+                setLogLevel('error');
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                isDbConnected = true;
+
+                // Wait for the auth state to settle
+                return new Promise(resolve => {
+                    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+                        if (!user) {
+                            if (initialAuthToken) {
+                                await signInWithCustomToken(auth, initialAuthToken);
+                            } else {
+                                await signInAnonymously(auth);
+                            }
+                        }
+                        
+                        userId = auth.currentUser?.uid || 'anonymous-user'; 
+                        isAuthReady = true;
+                        
+                        unsubscribe(); 
+                        resolve();
+                    });
+                });
+
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                Swal.fire('Error', 'Failed to connect to the database. Check console for details.', 'error');
+                isAuthReady = true;
+                isDbConnected = false;
+            }
+        }
+
+        // Function to sanitize video URLs
+        function sanitizeVideoUrl(url) {
+            if (!url) return null;
+            
+            // 1. Handle uploaded files (local path for VSC, canvas path for platform)
+            if (url.startsWith('uploaded:')) {
+                // In local mode, we assume the user provides a local file name
+                return { type: 'file', url: url.replace('uploaded:', '') };
+            }
+            if (url.toLowerCase().endsWith('.mp4') || url.toLowerCase().endsWith('.mov') || url.toLowerCase().endsWith('.webm')) {
+                 return { type: 'file', url: url };
+            }
+            
+            // 2. Handle external URLs (iframe)
+            try {
+                const parsedUrl = new URL(url);
+                if (parsedUrl.hostname.includes('youtube.com') || parsedUrl.hostname.includes('youtu.be')) {
+                    let videoId = '';
+                    if (parsedUrl.hostname.includes('youtu.be')) {
+                        videoId = parsedUrl.pathname.substring(1);
+                    } else if (parsedUrl.searchParams.get('v')) {
+                        videoId = parsedUrl.searchParams.get('v');
+                    }
+                    if (videoId) {
+                        return { type: 'iframe', url: `https://www.youtube.com/embed/${videoId}?autoplay=0` };
+                    }
+                }
+                return { type: 'iframe', url: url };
+            } catch (error) {
+                return null;
+            }
+        }
+
+        // --- Profile Management (Read-Only) ---
+        async function loadProfile() {
+            let profileData = LOCAL_PROFILE;
+
+            if (isDbConnected) {
+                const profileRef = doc(db, 'artifacts', appId, 'users', userId, 'profile', 'info');
+                const docSnap = await getDoc(profileRef);
+                if (docSnap.exists()) {
+                    profileData = docSnap.data();
+                } else {
+                    // If running in environment and doc doesn't exist, use mock data
+                }
+            }
+            
+            // Set image source
+            const profileImg = document.getElementById('profile-picture');
+            const picUrl = profileData.profilePicUrl || 'PFP.jpg';
+
+            // If connected, it will load the Canvas uploaded file path. If local, it loads the VSC file name.
+            profileImg.src = isDbConnected && !picUrl.includes('.') ? `uploaded:${picUrl}` : picUrl;
+            
+            document.getElementById('self-introduction-text').textContent = profileData.introductionText;
+            renderVideo(profileData.videoUrl);
+            
+            // Re-render lucide icons
+            lucide.createIcons();
+        }
+
+        // --- Video Management ---
+        function renderVideo(videoUrl) {
+            const container = document.getElementById('swoc-video-embed');
+            container.innerHTML = '';
+            
+            const sanitized = sanitizeVideoUrl(videoUrl);
+            
+            if (sanitized) {
+                if (sanitized.type === 'file') {
+                    // Handle local uploaded files (like .mp4) - uses local file path
+                    container.classList.add('file-embed');
+                    const videoElement = document.createElement('video');
+                    // Use the original path stored in DB for Canvas, or the clean path for local
+                    const srcPath = isDbConnected ? videoUrl : sanitized.url;
+                    
+                    videoElement.setAttribute('src', srcPath); 
+                    videoElement.setAttribute('controls', 'true');
+                    videoElement.setAttribute('preload', 'metadata');
+                    videoElement.classList.add('rounded-lg');
+                    container.appendChild(videoElement);
+                    
+                } else if (sanitized.type === 'iframe') {
+                    // Handle external URLs (like YouTube)
+                    container.classList.remove('file-embed');
+                    const iframe = document.createElement('iframe');
+                    iframe.setAttribute('src', sanitized.url);
+                    iframe.setAttribute('frameborder', '0');
+                    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+                    iframe.setAttribute('allowfullscreen', 'true');
+                    iframe.classList.add('rounded-lg');
+                    container.appendChild(iframe);
+                }
+            } else {
+                container.classList.remove('file-embed');
+                container.innerHTML = `
+                    <div class="flex items-center justify-center h-full text-gray-400 p-8 text-center absolute w-full h-full">
+                        <p>No video linked yet. Click 'Update Video URL' to embed your SWOC video from YouTube or a similar platform.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // --- Takeaways Management (Read-Only) ---
+        
+        function renderTakeaways(takeaways) {
+            // Sort by timestamp descending for consistent display
+            const sortedTakeaways = takeaways.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+            
+            const list = document.getElementById('takeaways-list');
+            list.innerHTML = '';
+            
+            if (sortedTakeaways.length === 0) {
+                list.innerHTML = '<p class="text-center text-gray-500 py-8">No key lecture takeaways have been recorded yet.</p>';
+                return;
+            }
+
+            sortedTakeaways.forEach((data) => {
+                
+                const date = data.timestamp ? new Date(data.timestamp).toLocaleDateString() : 'N/A';
+                
+                const item = document.createElement('div');
+                item.className = 'bg-gray-700 p-4 rounded-lg border-l-4 border-green-500 shadow-md transition-all hover:shadow-lg hover:bg-gray-700/80';
+                item.innerHTML = `
+                    <h4 class="font-bold text-lg text-gray-100 mb-2">${data.lectureTitle || 'General Takeaway'}</h4>
+                    <p class="text-gray-300 mb-2 whitespace-pre-wrap">${data.text}</p>
+                    <p class="text-xs text-gray-500">Recorded on: ${date}</p>
+                `;
+                list.appendChild(item);
+            });
+
+            // Re-render lucide icons after content is injected
+            lucide.createIcons();
+        }
+
+        function setupTakeawayListener() {
+            if (!isDbConnected) {
+                // Mock load for local mode
+                renderTakeaways(localTakeaways);
+                return;
+            }
+
+            const q = query(collection(db, 'artifacts', appId, 'users', userId, 'takeaways'), orderBy("timestamp", "desc"));
+            
+            onSnapshot(q, (snapshot) => {
+                const takeaways = [];
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    takeaways.push({
+                        id: doc.id,
+                        lectureTitle: data.lectureTitle,
+                        text: data.text,
+                        timestamp: data.timestamp ? data.timestamp.toDate() : new Date()
+                    });
+                });
+                renderTakeaways(takeaways);
+            }, (error) => {
+                console.error("Takeaway listener failed: ", error);
+                Swal.fire('Error', 'Could not load key takeaways in real-time.', 'error');
+            });
+        }
+
+        // --- Main App Initialization ---
+        window.onload = async function() {
+            // Step 1: Initialize Firebase or detect local environment
+            await initializeFirebase();
+            
+            // Step 2: Load data (from DB or mock data)
+            await loadProfile(); 
+            setupTakeawayListener();
+            
+            // Step 3: Display content
+            document.getElementById('loading-overlay').classList.add('opacity-0');
+            setTimeout(() => {
+                document.getElementById('loading-overlay').classList.add('hidden');
+                document.getElementById('portfolio-app').classList.remove('hidden');
+                lucide.createIcons();
+            }, 300);
+        }
+
+        // Removed: All window-exposed functions for editing (deleteTakeaway, openVideoModal, openIntroModal, openProfilePicModal)
+    </script>
+</body>
+</html>
